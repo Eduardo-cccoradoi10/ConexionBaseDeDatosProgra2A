@@ -14,17 +14,21 @@ public class Estudiante {
     private int id;
     private String nombre;
     private String carnet;
+    private boolean activo;   // nuevo campo
+    private String tipo;      // nuevo campo
 
-    public Estudiante(int id, String nombre, String carnet) {
+    public Estudiante(int id, String nombre, String carnet, boolean activo, String tipo) {
         this.id = id;
         this.nombre = nombre;
         this.carnet = carnet;
+        this.setActivo(activo);
+        this.setTipo(tipo);
     }
 
     // Constructor de conveniencia para cuando todavia no existe en la base de
     // datos (por eso id = 0: MySQL le va a asignar el id real al insertarlo).
-    public Estudiante(String nombre, String carnet) {
-        this(0, nombre, carnet);
+    public Estudiante(String nombre, String carnet, boolean activo, String tipo) {
+        this(0, nombre, carnet, activo, tipo);
     }
 
     public int getId() {
@@ -47,4 +51,20 @@ public class Estudiante {
     public String toString() {
         return String.format("[%d] %s - carnet %s", id, nombre, carnet);
     }
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	}
 }

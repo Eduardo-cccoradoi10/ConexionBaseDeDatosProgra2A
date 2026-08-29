@@ -31,13 +31,15 @@ public class EstudianteDAO {
 
     // 1. CREATE: inserta un estudiante nuevo y retorna el id que le asigno MySQL.
     public int crear(Estudiante estudiante) throws SQLException {
-        String sql = "INSERT INTO estudiantes (nombre, carnet) VALUES (?, ?)";
+    	String sql = "INSERT INTO estudiantes (nombre, carnet, activo, tipo) VALUES (?, ?, ?, ?)";
 
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
              PreparedStatement statement = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setString(1, estudiante.getNombre());
-            statement.setString(2, estudiante.getCarnet());
+        	statement.setString(1, estudiante.getNombre());
+        	statement.setString(2, estudiante.getCarnet());
+        	statement.setBoolean(3, estudiante.isActivo());
+        	statement.setString(4, estudiante.getTipo());
             statement.executeUpdate();
 
             // IMPORTANTE: RETURN_GENERATED_KEYS + getGeneratedKeys() es como se
@@ -118,6 +120,28 @@ public class EstudianteDAO {
         }
     }
 
+    public List<Estudiante> listarActivos() throws SQLException {
+        String sql = "SELECT id, nombre, carnet, activo, tipo FROM estudiantes WHERE activo = 1 ORDER BY id";
+        List<Estudiante> estudiantes = new ArrayList<>();
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+            while (resultado.next()) estudiantes.add(mapearFila(resultado));
+        }
+        return estudiantes;
+    }
+
+    public List<Estudiante> listarInactivos() throws SQLException {
+        String sql = "SELECT id, nombre, carnet, activo, tipo FROM estudiantes WHERE activo = 0 ORDER BY id";
+        List<Estudiante> estudiantes = new ArrayList<>();
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+            while (resultado.next()) estudiantes.add(mapearFila(resultado));
+        }
+        return estudiantes;
+    }
+    
     // Metodo privado de apoyo: convierte la fila actual del ResultSet en un
     // objeto Estudiante. Evita repetir este mismo codigo en listarTodos() y en
     // buscarPorCarnet().
@@ -125,6 +149,9 @@ public class EstudianteDAO {
         int id = resultado.getInt("id");
         String nombre = resultado.getString("nombre");
         String carnet = resultado.getString("carnet");
-        return new Estudiante(id, nombre, carnet);
+        boolean activo = resultado.getBoolean("activo");
+        String tipo = resultado.getString("tipo");
+        return new Estudiante(id, nombre, carnet, activo, tipo);
     }
+
 }

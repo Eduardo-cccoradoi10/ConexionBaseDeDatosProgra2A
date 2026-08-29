@@ -21,3 +21,24 @@ INSERT IGNORE INTO estudiantes (nombre, carnet) VALUES
     ('Ana Lopez', '2024001'),
     ('Carlos Perez', '2024002'),
     ('Maria Gonzalez', '2024003');
+
+-- Añadimos campos a la tabla
+ALTER TABLE estudiantes
+ADD COLUMN activo TINYINT(1) DEFAULT 1,
+ADD COLUMN tipo ENUM('Pregrado','Posgrado') NOT NULL DEFAULT 'Pregrado';
+
+-- Ingresamos y persistimos datos
+UPDATE estudiantes
+SET activo = 0, tipo = 'Posgrado'
+WHERE carnet = '2024002';
+
+-- Consultamos los estudiantes activos
+SELECT id, nombre, carnet, tipo
+FROM estudiantes
+WHERE activo = 1;
+
+-- Consultamos estudiantes inactivos
+SELECT id, nombre, carnet, tipo
+FROM estudiantes
+WHERE activo = 0;
+

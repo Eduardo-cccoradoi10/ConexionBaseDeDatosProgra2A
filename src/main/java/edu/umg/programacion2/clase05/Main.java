@@ -51,13 +51,19 @@ public class Main {
                     eliminarEstudiante();
                     break;
                 case 6:
+                	listarActivos();
+                    break;
+                case 7:
+                	listarInactivos();
+                    break;
+                case 8:
                     System.out.println("Hasta luego.");
                     break;
                 default:
                     System.out.println("Opcion invalida. Intenta de nuevo.");
             }
             System.out.println();
-        } while (opcion != 6);
+        } while (opcion != 8);
 
         teclado.close();
     }
@@ -69,7 +75,9 @@ public class Main {
         System.out.println("3. Buscar estudiante por carnet");
         System.out.println("4. Actualizar nombre de un estudiante");
         System.out.println("5. Eliminar estudiante");
-        System.out.println("6. Salir");
+        System.out.println("6. Estudiantes Activos");
+        System.out.println("7. Estudiantes Inactivos");
+        System.out.println("8. Salir");
         System.out.print("Elige una opcion: ");
     }
 
@@ -88,13 +96,18 @@ public class Main {
     }
 
     private static void agregarEstudiante() {
-        System.out.print("Nombre: ");
-        String nombre = teclado.nextLine();
-        System.out.print("Carnet: ");
-        String carnet = teclado.nextLine();
+    	System.out.print("Nombre: ");
+    	String nombre = teclado.nextLine();
+    	System.out.print("Carnet: ");
+    	String carnet = teclado.nextLine();
+    	System.out.print("Activo (1=Sí, 0=No): ");
+    	boolean activo = teclado.nextInt() == 1;
+    	teclado.nextLine();
+    	System.out.print("Tipo (Pregrado/Posgrado): ");
+    	String tipo = teclado.nextLine();
 
         try {
-            int id = estudianteDAO.crear(new Estudiante(nombre, carnet));
+        	int id = estudianteDAO.crear(new Estudiante(nombre, carnet, activo, tipo));
             System.out.println("Estudiante creado con id " + id);
         } catch (SQLException e) {
             // Cuidado: nunca dejen un catch vacio. Como minimo, impriman el
@@ -166,6 +179,24 @@ public class Main {
             }
         } catch (SQLException e) {
             System.err.println("Error al eliminar el estudiante: " + e.getMessage());
+        }
+    }
+    
+    private static void listarActivos() {
+        try {
+            List<Estudiante> estudiantes = estudianteDAO.listarActivos();
+            estudiantes.forEach(System.out::println);
+        } catch (SQLException e) {
+            System.err.println("Error al listar activos: " + e.getMessage());
+        }
+    }
+
+    private static void listarInactivos() {
+        try {
+            List<Estudiante> estudiantes = estudianteDAO.listarInactivos();
+            estudiantes.forEach(System.out::println);
+        } catch (SQLException e) {
+            System.err.println("Error al listar inactivos: " + e.getMessage());
         }
     }
 }
